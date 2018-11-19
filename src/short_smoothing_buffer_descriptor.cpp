@@ -12,12 +12,18 @@
 #include "dvbsi++/byte_stream.h"
 #include "dvbsi++/short_smoothing_buffer_descriptor.h"
 
-ShortSmoothingBufferDescriptor::ShortSmoothingBufferDescriptor(const uint8_t * const buffer) : Descriptor(buffer), privateDataBytes(descriptorLength-1)
+ShortSmoothingBufferDescriptor::ShortSmoothingBufferDescriptor(const uint8_t * const buffer) : Descriptor(buffer), privateDataBytes(descriptorLength > 0 ? descriptorLength-1 : 0)
 {
-	sbSize = (buffer[2] >> 6) & 0x03;
-	sbLeakRate = buffer[2] & 0x4f;
+	if (descriptorLength > 1) {
+		sbSize = (buffer[2] >> 6) & 0x03;
+		sbLeakRate = buffer[2] & 0x4f;
+	}
+	else {
+		sbSize = 0;
+		sbLeakRate = 0;
+	}
 
-	memcpy(&privateDataBytes[0], &buffer[3], descriptorLength-1);
+	memcpy(&privateDataBytes[0], &buffer[3], privateDataBytes.size());
 }
 
 ShortSmoothingBufferDescriptor::~ShortSmoothingBufferDescriptor()

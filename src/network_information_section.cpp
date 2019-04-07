@@ -35,6 +35,7 @@ uint16_t TransportStreamInfo::getOriginalNetworkId(void) const
 
 NetworkInformationSection::NetworkInformationSection(const uint8_t * const buffer) : LongCrcSection(buffer)
 {
+	networkId = UINT16(&buffer[3]);
 	networkDescriptorsLength = sectionLength > 9 ? DVB_LENGTH(&buffer[8]) : 0;
 	
 	uint16_t pos = 10;
@@ -66,6 +67,11 @@ NetworkInformationSection::~NetworkInformationSection(void)
 {
 	for (TransportStreamInfoIterator i = tsInfo.begin(); i != tsInfo.end(); ++i)
 		delete *i;
+}
+
+uint16_t NetworkInformationSection::getNetworkId(void) const
+{
+	return networkId;
 }
 
 const TransportStreamInfoList *NetworkInformationSection::getTsInfo(void) const

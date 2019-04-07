@@ -37,6 +37,7 @@ typedef TransportStreamInfoList::const_iterator TransportStreamInfoConstIterator
 class NetworkInformationSection : public LongCrcSection, public DescriptorContainer
 {
 	protected:
+		unsigned networkId				: 16;
 		unsigned networkDescriptorsLength		: 12;
 		unsigned transportStreamLoopLength		: 12;
 		TransportStreamInfoList tsInfo;
@@ -49,6 +50,7 @@ class NetworkInformationSection : public LongCrcSection, public DescriptorContai
 		static const enum TableId TID = TID_NIT_ACTUAL;
 		static const uint32_t TIMEOUT = 12000;
 
+		uint16_t getNetworkId(void) const;
 		const TransportStreamInfoList *getTsInfo(void) const;
 };
 

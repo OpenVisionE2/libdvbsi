@@ -17,6 +17,9 @@ Descriptor::Descriptor(const uint8_t * const buffer)
 	descriptorTag = buffer[0];
 	descriptorLength = buffer[1];
 
+	if(!descriptorLength)
+		descriptorLength = 1;
+
 	dataBytes.resize(descriptorLength);
 	memcpy(&dataBytes[0], &buffer[2], descriptorLength);
 

@@ -23,8 +23,14 @@
 #define w32(p,v)	do { *(uint32_t * const)(p) = ((const uint32_t)v) } while (0)
 #define w64(p,v)	do { *(uint64_t * const)(p) = ((const uint64_t)v) } while (0)
 #else
+#ifdef __sh__
+/* SuperH does not like unaligned accesses, so work around that */
+#define r16(p)		((((uint8_t *)p)[0]) <<  8 | (((uint8_t *)p)[1]))
+#define r32(p)		((((uint8_t *)p)[0]) << 24 | (((uint8_t *)p)[1]) << 16 | (((uint8_t *)p)[2]) << 8 | ((uint8_t *)p)[3])
+#else
 #define r16(p)		bswap_16(*(const uint16_t * const)p)
 #define r32(p)		bswap_32(*(const uint32_t * const)p)
+#endif
 #define r64(p)		bswap_64(*(const uint64_t * const)p)
 #define w16(p,v)	do { *(uint16_t * const)(p) = bswap_16((const uint16_t)v) } while (0)
 #define w32(p,v)	do { *(uint32_t * const)(p) = bswap_32((const uint32_t)v) } while (0)

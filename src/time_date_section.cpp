@@ -15,7 +15,7 @@
 
 TimeAndDateSection::TimeAndDateSection(const uint8_t * const buffer) : ShortSection(buffer)
 {
-	if (sectionLength > 8) {
+	if (sectionLength + 3 >= 8) {
 		utcTimeMjd = UINT16(&buffer[3]);
 		utcTimeBcd = (buffer[5] << 16) | UINT16(&buffer[6]);
 	}

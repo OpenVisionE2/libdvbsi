@@ -12,7 +12,8 @@
 
 #include <dvbsi++/ac3_descriptor.h>
 
-Ac3Descriptor::Ac3Descriptor(const uint8_t * const buffer) : Descriptor(buffer)
+Ac3Descriptor::Ac3Descriptor(const uint8_t * const buffer) : Descriptor(buffer),
+	ac3Type(0), bsid(0), mainid(0), avsc(0)
 {
 	// EN300468 says that descriptor_length must be >= 1,
 	// but it's easy to set sane defaults in this case
@@ -30,24 +31,24 @@ Ac3Descriptor::Ac3Descriptor(const uint8_t * const buffer) : Descriptor(buffer)
 	mainidFlag = (buffer[2] >> 5) & 0x01;
 	asvcFlag = (buffer[2] >> 4) & 0x01;
 
-	size_t headerLength = 1 + ac3TypeFlag + bsidFlag + mainidFlag + asvcFlag;
-	ASSERT_MIN_DLEN(headerLength);
-
 	size_t i = 3;
-	if (ac3TypeFlag == 1)
+	if (ac3TypeFlag == 1 && i < descriptorLength + 2)
 		ac3Type = buffer[i++];
 
-	if (bsidFlag == 1)
+	if (bsidFlag == 1 && i < descriptorLength + 2)
 		bsid = buffer[i++];
 
-	if (mainidFlag == 1)
+	if (mainidFlag == 1 && i < descriptorLength + 2)
 		mainid = buffer[i++];
 
-	if (asvcFlag == 1)
+	if (asvcFlag == 1 && i < descriptorLength + 2)
 		avsc = buffer[i++];
 
-	additionalInfo.resize(descriptorLength - headerLength);
-	memcpy(&additionalInfo[0], &buffer[i], descriptorLength - headerLength);
+	size_t headerLength = 1 + ac3TypeFlag + bsidFlag + mainidFlag + asvcFlag;
+	if (descriptorLength > headerLength) {
+		additionalInfo.resize(descriptorLength - headerLength);
+		memcpy(&additionalInfo[0], &buffer[i], descriptorLength - headerLength);
+	}
 }
 
 uint8_t Ac3Descriptor::getAc3TypeFlag(void) const
